@@ -67,27 +67,22 @@ public class ExcelReaderController {
                 sharedStrings,
                 new XSSFSheetXMLHandler.SheetContentsHandler() {
 
-                    private final StringBuilder currentRow = new StringBuilder();
+
 
                     @Override
                     public void startRow(int rowNum) {
-                        currentRow.setLength(0); // reset for new row
-                    }
-
-                    @Override
-                    public void endRow(int rowNum) {
-                    	 
-                        String rowData = currentRow.toString();
-                        executor.submit(() -> {
-                            processRow(rowData.split(","));
+                    	executor.submit(() -> {
                             counter.incrementAndGet();
                         });
                     }
 
                     @Override
+                    public void endRow(int rowNum) {
+                        
+                    }
+                    @Override
                     public void cell(String cellReference, String formattedValue, XSSFComment comment) {
-                        if (currentRow.length() > 0) currentRow.append(",");
-                        currentRow.append(formattedValue == null ? "" : formattedValue);
+
                     }
 
                     @Override
@@ -100,8 +95,5 @@ public class ExcelReaderController {
         parser.parse(new InputSource(sheetInputStream));
     }
 
-    private void processRow(String[] cells) {
-        // Simulate work for each row (e.g., DB insert, transformation)
-        // System.out.println(Arrays.toString(cells));
-    }
+
 }
